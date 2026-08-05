@@ -86,7 +86,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-  document.getElementById("calculateBtn").onclick = function () {
+  const saveButton = document.getElementById("saveIngredient");
+
+if (saveButton) {
+
+saveButton.onclick=function(){
 
 
     let ingredientCost = 0;
@@ -353,9 +357,12 @@ JSON.stringify(ingredientDatabase)
 
 displayDatabase();
 
-
 };
 
+}
 
 
-displayDatabase();
+
+if (document.getElementById("databaseList")) {
+  displayDatabase();
+}
