@@ -1,197 +1,141 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-  const ingredientBox = document.getElementById("ingredients");
-  const addBtn = document.getElementById("addBtn");
-  const calculateBtn = document.getElementById("calculateBtn");
+    const ingredientBox = document.getElementById("ingredients");
+    const addBtn = document.getElementById("addBtn");
+    const calculateBtn = document.getElementById("calculateBtn");
 
+    function createIngredient() {
 
-  function createIngredient() {
+        const div = document.createElement("div");
 
-    const div = document.createElement("div");
+        div.className = "ingredient";
 
-    div.className = "ingredient";
+        div.innerHTML = `
+            <input class="name" placeholder="Ingredient name">
 
-    div.innerHTML = `
+            <label>
+                Purchase price (GH₵)
+                <input class="price" type="number" step="0.01">
+            </label>
 
-      <input class="name" placeholder="Ingredient name">
+            <label>
+                Purchase quantity
+                <input class="purchaseQty" type="number" step="0.01">
+            </label>
 
-      <label>
-      Purchase price (GH₵)
-      <input class="price" type="number">
-      </label>
+            <label>
+                Purchase unit
+                <select class="purchaseUnit">
+                    <option value="kg">kg</option>
+                    <option value="g">g</option>
+                    <option value="litre">litre</option>
+                    <option value="ml">ml</option>
+                    <option value="each">each</option>
+                </select>
+            </label>
 
-      <label>
-      Purchase quantity
-      <input class="purchaseQty" type="number">
-      </label>
+            <label>
+                Amount used
+                <input class="usedQty" type="number" step="0.01">
+            </label>
 
-      <label>
-      Purchase unit
-      <select class="purchaseUnit">
-        <option value="kg">kg</option>
-        <option value="g">g</option>
-        <option value="litre">litre</option>
-        <option value="ml">ml</option>
-        <option value="each">each</option>
-      </select>
-      </label>
+            <label>
+                Unit used
+                <select class="usedUnit">
+                    <option value="kg">kg</option>
+                    <option value="g">g</option>
+                    <option value="litre">litre</option>
+                    <option value="ml">ml</option>
+                    <option value="each">each</option>
+                </select>
+            </label>
 
+            <button type="button" class="removeBtn">Remove</button>
+            <hr>
+        `;
 
-      <label>
-      Amount used in recipe
-      <input class="usedQty" type="number">
-      </label>
+        ingredientBox.appendChild(div);
 
-
-      <label>
-      Unit used
-      <select class="usedUnit">
-        <option value="kg">kg</option>
-        <option value="g">g</option>
-        <option value="litre">litre</option>
-        <option value="ml">ml</option>
-        <option value="each">each</option>
-      </select>
-      </label>
-
-      <hr>
-
-    `;
-
-
-    ingredientBox.appendChild(div);
-
-  }
-
-
-
-  if(addBtn){
-    addBtn.onclick = createIngredient;
-  }
-
-
-
-  function convertToBase(amount, unit){
-
-    if(unit === "kg" || unit === "litre"){
-      return amount * 1000;
+        div.querySelector(".removeBtn").addEventListener("click", () => {
+            div.remove();
+        });
     }
 
-    return amount;
+    function convertToBase(amount, unit) {
 
-  }
+        switch (unit) {
+            case "kg":
+            case "litre":
+                return amount * 1000;
 
+            case "g":
+            case "ml":
+            case "each":
+                return amount;
 
-
-  if(calculateBtn){
-
-    calculateBtn.onclick = function(){
-
-      let ingredientCost = 0;
-
-
-      document.querySelectorAll(".ingredient")
-      .forEach(function(item){
-
-
-        let price = Number(
-          item.querySelector(".price").value
-        ) || 0;
-
-
-        let purchaseQty = Number(
-          item.querySelector(".purchaseQty").value
-        ) || 0;
-
-
-        let purchaseUnit =
-        item.querySelector(".purchaseUnit").value;
-
-
-        let usedQty = Number(
-          item.querySelector(".usedQty").value
-        ) || 0;
-
-
-        let usedUnit =
-        item.querySelector(".usedUnit").value;
-
-
-
-        let purchaseAmount =
-        convertToBase(purchaseQty,purchaseUnit);
-
-
-        let usedAmount =
-        convertToBase(usedQty,usedUnit);
-
-
-
-        if(purchaseAmount > 0){
-
-          let costPerUnit =
-          price / purchaseAmount;
-
-
-          ingredientCost +=
-          usedAmount * costPerUnit;
-
+            default:
+                return amount;
         }
+    }
 
+    function getCategory(unit) {
 
-      });
+        if (unit === "kg" || unit === "g")
+            return "weight";
 
+        if (unit === "litre" || unit === "ml")
+            return "volume";
 
+        return "each";
+    }
 
-      let packaging =
-      Number(document.getElementById("packaging").value) || 0;
+    addBtn?.addEventListener("click", createIngredient);
 
+    calculateBtn?.addEventListener("click", () => {
 
-      let labour =
-      Number(document.getElementById("labour").value) || 0;
+        let ingredientCost = 0;
 
+        document.querySelectorAll(".ingredient").forEach(item => {
 
-      let transport =
-      Number(document.getElementById("transport").value) || 0;
+            const price = Number(item.querySelector(".price").value);
+            const purchaseQty = Number(item.querySelector(".purchaseQty").value);
+            const usedQty = Number(item.querySelector(".usedQty").value);
 
+            const purchaseUnit = item.querySelector(".purchaseUnit").value;
+            const usedUnit = item.querySelector(".usedUnit").value;
 
-      let profit =
-      Number(document.getElementById("profit").value) || 0;
+            if (!price || !purchaseQty || !usedQty)
+                return;
 
+            // Prevent mixing units
+            if (getCategory(purchaseUnit) !== getCategory(usedUnit)) {
+                alert("Purchase unit and used unit must match.");
+                return;
+            }
 
+            const purchaseAmount = convertToBase(purchaseQty, purchaseUnit);
+            const usedAmount = convertToBase(usedQty, usedUnit);
 
-      let total =
-      ingredientCost +
-      packaging +
-      labour +
-      transport;
+            const costPerUnit = price / purchaseAmount;
 
+            ingredientCost += usedAmount * costPerUnit;
 
+        });
 
-      let selling =
-      total + (total * profit / 100);
+        const packaging = Number(document.getElementById("packaging").value) || 0;
+        const labour = Number(document.getElementById("labour").value) || 0;
+        const transport = Number(document.getElementById("transport").value) || 0;
+        const profit = Number(document.getElementById("profit").value) || 0;
 
+        const totalCost = ingredientCost + packaging + labour + transport;
+        const sellingPrice = totalCost * (1 + profit / 100);
 
+        document.getElementById("ingredientCost").textContent = ingredientCost.toFixed(2);
+        document.getElementById("totalCost").textContent = totalCost.toFixed(2);
+        document.getElementById("sellingPrice").textContent = sellingPrice.toFixed(2);
 
-      document.getElementById("ingredientCost").innerText =
-      ingredientCost.toFixed(2);
+    });
 
-
-      document.getElementById("totalCost").innerText =
-      total.toFixed(2);
-
-
-      document.getElementById("sellingPrice").innerText =
-      selling.toFixed(2);
-
-
-    };
-
-  }
-
-
-
-  createIngredient();
-
+    createIngredient();
 
 });
