@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   const ingredientBox = document.getElementById("ingredients");
+  const addBtn = document.getElementById("addBtn");
+  const calculateBtn = document.getElementById("calculateBtn");
 
 
   function createIngredient() {
@@ -13,18 +15,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
       <input class="name" placeholder="Ingredient name">
 
-
       <label>
       Purchase price (GH₵)
       <input class="price" type="number">
       </label>
 
-
       <label>
       Purchase quantity
       <input class="purchaseQty" type="number">
       </label>
-
 
       <label>
       Purchase unit
@@ -39,13 +38,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
       <label>
-      Recipe quantity used
+      Amount used in recipe
       <input class="usedQty" type="number">
       </label>
 
 
       <label>
-      Recipe unit used
+      Unit used
       <select class="usedUnit">
         <option value="kg">kg</option>
         <option value="g">g</option>
@@ -66,17 +65,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-  document.getElementById("addBtn").onclick = createIngredient;
+  if(addBtn){
+    addBtn.onclick = createIngredient;
+  }
 
 
 
-  function convertToBase(amount, unit) {
+  function convertToBase(amount, unit){
 
-    if (unit === "kg") {
-      return amount * 1000;
-    }
-
-    if (unit === "litre") {
+    if(unit === "kg" || unit === "litre"){
       return amount * 1000;
     }
 
@@ -86,112 +83,111 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-  const saveButton = document.getElementById("saveIngredient");
+  if(calculateBtn){
 
-if (saveButton) {
+    calculateBtn.onclick = function(){
 
-saveButton.onclick=function(){
-
-
-    let ingredientCost = 0;
+      let ingredientCost = 0;
 
 
-    document.querySelectorAll(".ingredient")
-    .forEach(function(item){
+      document.querySelectorAll(".ingredient")
+      .forEach(function(item){
 
 
-      let price =
-      Number(item.querySelector(".price").value) || 0;
+        let price = Number(
+          item.querySelector(".price").value
+        ) || 0;
 
 
-      let purchaseQty =
-      Number(item.querySelector(".purchaseQty").value) || 0;
+        let purchaseQty = Number(
+          item.querySelector(".purchaseQty").value
+        ) || 0;
 
 
-      let purchaseUnit =
-      item.querySelector(".purchaseUnit").value;
+        let purchaseUnit =
+        item.querySelector(".purchaseUnit").value;
 
 
-      let usedQty =
-      Number(item.querySelector(".usedQty").value) || 0;
+        let usedQty = Number(
+          item.querySelector(".usedQty").value
+        ) || 0;
 
 
-      let usedUnit =
-      item.querySelector(".usedUnit").value;
-
-
-
-      let purchaseBase =
-      convertToBase(purchaseQty, purchaseUnit);
-
-
-      let usedBase =
-      convertToBase(usedQty, usedUnit);
+        let usedUnit =
+        item.querySelector(".usedUnit").value;
 
 
 
-      if (purchaseBase > 0) {
+        let purchaseAmount =
+        convertToBase(purchaseQty,purchaseUnit);
 
 
-        let costPerBaseUnit =
-        price / purchaseBase;
-
-
-        ingredientCost +=
-        usedBase * costPerBaseUnit;
-
-
-      }
-
-
-    });
+        let usedAmount =
+        convertToBase(usedQty,usedUnit);
 
 
 
-    let packaging =
-    Number(document.getElementById("packaging").value) || 0;
+        if(purchaseAmount > 0){
+
+          let costPerUnit =
+          price / purchaseAmount;
 
 
-    let labour =
-    Number(document.getElementById("labour").value) || 0;
+          ingredientCost +=
+          usedAmount * costPerUnit;
+
+        }
 
 
-    let transport =
-    Number(document.getElementById("transport").value) || 0;
-
-
-    let profit =
-    Number(document.getElementById("profit").value) || 0;
-
-
-
-    let total =
-    ingredientCost +
-    packaging +
-    labour +
-    transport;
+      });
 
 
 
-    let selling =
-    total + (total * profit / 100);
+      let packaging =
+      Number(document.getElementById("packaging").value) || 0;
+
+
+      let labour =
+      Number(document.getElementById("labour").value) || 0;
+
+
+      let transport =
+      Number(document.getElementById("transport").value) || 0;
+
+
+      let profit =
+      Number(document.getElementById("profit").value) || 0;
 
 
 
-    document.getElementById("ingredientCost").innerText =
-    ingredientCost.toFixed(2);
-
-
-    document.getElementById("totalCost").innerText =
-    total.toFixed(2);
-
-
-    document.getElementById("sellingPrice").innerText =
-    selling.toFixed(2);
+      let total =
+      ingredientCost +
+      packaging +
+      labour +
+      transport;
 
 
 
-  };
+      let selling =
+      total + (total * profit / 100);
+
+
+
+      document.getElementById("ingredientCost").innerText =
+      ingredientCost.toFixed(2);
+
+
+      document.getElementById("totalCost").innerText =
+      total.toFixed(2);
+
+
+      document.getElementById("sellingPrice").innerText =
+      selling.toFixed(2);
+
+
+    };
+
+  }
 
 
 
@@ -199,170 +195,3 @@ saveButton.onclick=function(){
 
 
 });
-
-let ingredientDatabase =
-JSON.parse(localStorage.getItem("cakeIngredients")) || [];
-
-
-
-function displayDatabase(){
-
-
-const list =
-document.getElementById("databaseList");
-
-
-list.innerHTML="";
-
-
-
-ingredientDatabase.forEach(function(item,index){
-
-
-list.innerHTML += `
-
-<div class="ingredient">
-
-<strong>${item.name}</strong><br>
-
-Category:
-${item.category}<br>
-
-Price:
-GH₵${item.price}
-
-per ${item.quantity}${item.unit}
-
-
-<button onclick="editIngredient(${index})">
-Edit
-</button>
-
-
-<button onclick="deleteIngredient(${index})">
-Delete
-</button>
-
-
-</div>
-
-`;
-
-});
-
-
-}
-
-
-
-document.getElementById("saveIngredient")
-.onclick=function(){
-
-
-let ingredient={
-
-name:
-document.getElementById("dbName").value,
-
-
-category:
-document.getElementById("dbCategory").value,
-
-
-price:
-Number(document.getElementById("dbPrice").value),
-
-
-quantity:
-Number(document.getElementById("dbQuantity").value),
-
-
-unit:
-document.getElementById("dbUnit").value
-
-};
-
-
-
-ingredientDatabase.push(ingredient);
-
-
-
-localStorage.setItem(
-"cakeIngredients",
-JSON.stringify(ingredientDatabase)
-);
-
-
-
-displayDatabase();
-
-
-
-};
-
-
-
-window.deleteIngredient=function(index){
-
-
-ingredientDatabase.splice(index,1);
-
-
-localStorage.setItem(
-"cakeIngredients",
-JSON.stringify(ingredientDatabase)
-);
-
-
-displayDatabase();
-
-
-};
-
-
-
-window.editIngredient=function(index){
-
-
-let item =
-ingredientDatabase[index];
-
-
-document.getElementById("dbName").value =
-item.name;
-
-
-document.getElementById("dbPrice").value =
-item.price;
-
-
-document.getElementById("dbQuantity").value =
-item.quantity;
-
-
-document.getElementById("dbUnit").value =
-item.unit;
-
-
-ingredientDatabase.splice(index,1);
-
-
-
-localStorage.setItem(
-"cakeIngredients",
-JSON.stringify(ingredientDatabase)
-);
-
-
-displayDatabase();
-
-};
-
-}
-
-
-
-if (document.getElementById("databaseList")) {
-  displayDatabase();
-}
