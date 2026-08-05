@@ -1,1 +1,156 @@
-index.html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pen</title>
+  </head>
+  <body>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
+<div class="container">
+
+<h1>🍰 Cake Cost Calculator GH₵</h1>
+
+<div class="card">
+
+<h2>🧁 Ingredient Database</h2>
+
+
+<label>
+Ingredient Name
+<input id="dbName" type="text">
+</label>
+
+
+<label>
+Category
+<select id="dbCategory">
+
+<option>Dry Ingredient</option>
+<option>Wet Ingredient</option>
+<option>Decoration</option>
+<option>Packaging</option>
+
+</select>
+</label>
+
+
+<label>
+Purchase Price (GH₵)
+<input id="dbPrice" type="number">
+</label>
+
+
+<label>
+Purchase Quantity
+<input id="dbQuantity" type="number">
+</label>
+
+
+<label>
+Purchase Unit
+<select id="dbUnit">
+
+<option value="kg">kg</option>
+<option value="g">g</option>
+<option value="litre">litre</option>
+<option value="ml">ml</option>
+<option value="each">each</option>
+
+</select>
+</label>
+
+
+<button id="saveIngredient">
+Save Ingredient
+</button>
+
+
+<div id="databaseList"></div>
+
+
+</div>
+<div class="card">
+
+<h2>Recipe Ingredients</h2>
+
+<div id="ingredients"></div>
+
+<button id="addBtn">
++ Add Ingredient
+</button>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>Extra Costs</h2>
+
+
+<label>
+Packaging GH₵
+<input id="packaging" type="number" value="0">
+</label>
+
+
+<label>
+Labour GH₵
+<input id="labour" type="number" value="0">
+</label>
+
+
+<label>
+Transport GH₵
+<input id="transport" type="number" value="0">
+</label>
+
+
+<label>
+Profit %
+<input id="profit" type="number" value="30">
+</label>
+
+
+</div>
+
+
+
+<button id="calculateBtn">
+Calculate Cake Price
+</button>
+
+
+
+<div class="card">
+
+<h2>Cost Summary</h2>
+
+
+<p>
+Ingredient Cost:
+GH₵<span id="ingredientCost">0</span>
+</p>
+
+
+<p>
+Total Cost:
+GH₵<span id="totalCost">0</span>
+</p>
+
+
+<h3>
+Selling Price:
+GH₵<span id="sellingPrice">0</span>
+</h3>
+
+
+</div>
+
+
+</div>
